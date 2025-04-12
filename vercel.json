@@ -1,14 +1,15 @@
 {
     "version": 2,
     "builds": [
-      {
-        "src": "manage.py",
-        "use": "@vercel/python",
-        "config": {
-          "maxLambdaSize": "50mb",
-          "runtime": "python3.11"
-        }
-      }
+    {
+    "src": "manage.py",
+    "use": "@vercel/python",
+    "config": {
+      "maxLambdaSize": "50mb",
+      "runtime": "python3.11",
+      "buildCommand": "python manage.py collectstatic --noinput"
+    }
+    }
     ],
     "routes": [
       {
@@ -18,5 +19,5 @@
     ],
     "env": {
       "DJANGO_SETTINGS_MODULE": "Apex_Engine.settings"
-    }
+    } 
   }
