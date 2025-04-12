@@ -11,23 +11,31 @@ def index(request):
     return render(request, 'index.html')
 #__________________________________________________________________#
 def search(request):
-    try:
-        if request.method == 'POST':
-            query = request.POST.get('search')
-            result_link,result_text,result_para = result(query)
-            result_data = zip(result_link,result_text,result_para)
-            res = Search(query=query,result_link=result_link,user=request.user)
-            res.save()
+    if request.method == 'POST':
+        query = request.POST.get('search', '').strip()
+        if not query:
+            messages.error(request, 'Please enter a search query.')
+            return redirect('index')
+        try:
+            result_link, result_text, result_para = result(query)
+            result_data = zip(result_link, result_text, result_para)
             
-            #random_ad = Ads.objects.order_by('?').first() 
+            # Save search only for authenticated users
+            if request.user.is_authenticated:
+                res = Search(query=query, result_link=result_link, user=request.user)
+                res.save()
+            
+            # Fetch ad safely
             random_ad = Ads_3rd_Party.objects.first()
             
-            if result == '':
-                return redirect('index')
-            else:
-                return render(request,'search.html',{'results': result_data,'random_ad': random_ad})
-    except Exception as e:
-        return render(request,'search.html',{'msg':e})
+            if not result_link:  # Check if results are empty
+                messages.warning(request, 'No results found.')
+                return render(request, 'search.html', {'results': [], 'random_ad': random_ad})
+            return render(request, 'search.html', {'results': result_data, 'random_ad': random_ad})
+        except Exception as e:
+            messages.error(request, f'Error processing search: {str(e)}')
+            return render(request, 'search.html', {'results': [], 'random_ad': None})
+    return redirect('index')
         
 #__________________________________________________________________#
 def register(request):

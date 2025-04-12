@@ -1,23 +1,27 @@
 {
     "version": 2,
     "builds": [
-    {
-    "src": "manage.py",
-    "use": "@vercel/python",
-    "config": {
-      "maxLambdaSize": "50mb",
-      "runtime": "python3.11",
-      "buildCommand": "python manage.py collectstatic --noinput"
-    }
-    }
+      {
+        "src": "vercel_app.py",
+        "use": "@vercel/python",
+        "config": {
+          "maxLambdaSize": "50mb",
+          "runtime": "python3.11"
+        }
+      }
     ],
     "routes": [
       {
+        "src": "/static/(.*)",
+        "dest": "/static/$1"
+      },
+      {
         "src": "/(.*)",
-        "dest": "manage.py"
+        "dest": "vercel_app.py"
       }
     ],
     "env": {
-      "DJANGO_SETTINGS_MODULE": "Apex_Engine.settings"
-    } 
+      "DJANGO_SETTINGS_MODULE": "Apex_Engine.settings",
+      "PYTHONUNBUFFERED": "1"
+    }
   }
